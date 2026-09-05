@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nlp-api-monitor
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: nlp-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 10s  # Scrape every 10 seconds, fast rollback detection
