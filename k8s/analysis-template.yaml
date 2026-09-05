@@ -1,0 +1,25 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: latency-check
+spec:
+  args:
+    - name: app-name
+  metrics:
+    - name: p95-latency
+      # If the 95th percentile latency goes above 2 second, analysis fails
+      successCondition: result[0] < 2.0
+      # Argo Rollouts evaluates this every 20 seconds, up to 3 measurements
+      interval: 20s
+      count: 3
+      provider:
+        prometheus:
+          # TODO match this to my Prometheus service name
+          address: http://prometheus-kube.default.svc.cluster.local:9090
+          query: |
+            histogram_quantile(
+              0.95,
+              sum(rate(http_request_latency_seconds_bucket{
+                app="{{args.app-name}}"}[1m])) by (le)
+            )

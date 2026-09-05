@@ -1,0 +1,47 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: nlp-api-rollout
+spec:
+  replicas: 5  # Makes 20% canary simpler
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: nlp-api
+  template:
+    metadata:
+      labels:
+        app: nlp-api
+      annotations:
+        # Prometheus auto-scrape /metrics endpoint
+        prometheus.io/scrpe: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - name: nlp-api
+          image: pettyre1/nlp-api:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_VERSION
+              value: "v1"  # Change to v2 to sabotage
+  strategy:
+    canary:
+      steps:
+        # 1: 20% of traffic to new version
+        - setWeight: 20
+        # 2: Pause 30s to let traffic hit canary pod
+        - pause: {duration: 30s}
+        # 3: Run AnalysisTemplate. If it fails, scale down
+        #    the canary and abort
+        - analysis:
+          templates:
+            - templateName: latency-check
+          args:
+            - name: app-name
+              value: nlp-api
+        # Step 4: If analysis passes, route 100% traffic to new version
+        - setWeiht: 100
