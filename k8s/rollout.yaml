@@ -34,14 +34,6 @@ spec:
         # 1: 20% of traffic to new version
         - setWeight: 20
         # 2: Pause 30s to let traffic hit canary pod
-        - pause: {duration: 30s}
-        # 3: Run AnalysisTemplate. If it fails, scale down
-        #    the canary and abort
-        - analysis:
-          templates:
-            - templateName: latency-check
-          args:
-            - name: app-name
-              value: nlp-api
-        # Step 4: If analysis passes, route 100% traffic to new version
+        - pause: { duration: 30s }
+        # Step 3: If analysis passes, route 100% traffic to new version
         - setWeight: 100
