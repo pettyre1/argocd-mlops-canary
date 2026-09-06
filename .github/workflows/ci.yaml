@@ -5,7 +5,11 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:  # Add a "run workflow" button in github
   push:
     paths:
-      - 'app/**'  # Only build when the Python app changes
+      - 'app/**' # Only build when the Python app changes
+
+# Grant the GitHub Actions bot permission to push commits
+permissions:
+  contents: write
 
 jobs:
   build-and-push:
@@ -18,12 +22,25 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
           context: ./app
           push: true
-          # Tags the image with the short Git commit SHA
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/nlp-api:${{ github.sha }}
+
+      - name: Update Kubernetes Manifest
+        run: |
+          # 1. Use sed to swap the old image tag for the new Git commit SHA
+          sed -i 's|image: ${{ secrets.DOCKERHUB_USERNAME }}/nlp-api:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/nlp-api:${{ github.sha }}|' k8s/rollout.yaml
+          
+          # 2. Configure the Git bot identity
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # 3. Commit and push the updated rollout.yaml to GitHub
+          git add k8s/rollout.yaml
+          git commit -m "ci: automated image tag update to ${{ github.sha }}"
+          git push
