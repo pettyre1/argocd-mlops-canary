@@ -1,6 +1,6 @@
 import os
 import time
-from fastpi import FastAPI, Request
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from prometheus_client import make_asgi_app, Histogram, Counter
 
