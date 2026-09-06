@@ -70,7 +70,7 @@ port-forward-argo:
 
 port-forward-prom:
 	@echo "Prometheus running on http://localhost:9090 (Ctrl+C to stop)..."
-	kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090:9090
+	kubectl port-forward svc/prometheus-server 9090:80
 
 port-forward-app:
 	@echo "NLP API running on http://localhost:8000 (Ctrl+C to stop)..."

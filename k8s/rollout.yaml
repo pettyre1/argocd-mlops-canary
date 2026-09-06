@@ -44,4 +44,4 @@ spec:
             - name: app-name
               value: nlp-api
         # Step 4: If analysis passes, route 100% traffic to new version
-        - setWeiht: 100
+        - setWeight: 100
