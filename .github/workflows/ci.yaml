@@ -5,7 +5,7 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:  # Add a "run workflow" button in github
   push:
     paths:
-      - 'app/**' # Only build when the Python app changes
+      - 'app/**'  # Only build when the Python app changes
 
 # Grant the GitHub Actions bot permission to push commits
 permissions:
@@ -16,16 +16,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Check Docker credentials
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          if [ -z "$DOCKERHUB_USERNAME" ]; then
+            echo "DOCKERHUB_USERNAME is NOT set"
+            exit 1
+          fi
+          if [ -z "$DOCKERHUB_PASSWORD" ]; then
+            echo "DOCKERHUB_PASSWORD is NOT set"
+            exit 1
+          fi
+          echo "Both Docker Hub secrets are present"
 
       - name: Log in to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and Push Docker Image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: ./app
           push: true
