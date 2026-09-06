@@ -15,8 +15,8 @@ spec:
       count: 3
       provider:
         prometheus:
-          # TODO match this to my Prometheus service name
-          address: http://prometheus-kube.default.svc.cluster.local:9090
+          # TODO match this to my Prometheus service name?
+          address: http://prometheus-server.default.svc.cluster.local:80
           query: |
             histogram_quantile(
               0.95,
