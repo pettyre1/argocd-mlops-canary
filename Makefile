@@ -22,12 +22,13 @@ setup: teardown start-cluster install-tools build apply-bootstrap get-argo-pass
 	@echo "\nCluster setup complete! Run 'make help' for port-forwarding commands."
 
 teardown:
-	@echo "Destroying Minikube cluster..."
-	minikube delete || true
+	#@echo "Destroying Minikube cluster..."
+	#minikube delete || true
 
 start-cluster:
-	@echo "Starting Minikube cluster ($(CPUS) CPUs, $(MEMORY)MB RAM)..."
-	minikube start --cpus $(CPUS) --memory $(MEMORY)
+	#@echo "Starting Minikube cluster ($(CPUS) CPUs, $(MEMORY)MB RAM)..."
+	#minikube start --cpus $(CPUS) --memory $(MEMORY)
+	k3d cluster create mlops-cluster --servers 1 --agents 0 --k3s-arg "--disable=traefik@server:0" --k3s-arg "--disable=servicelb@server:0"
 
 install-tools:
 	@echo "Creating namespaces..."
