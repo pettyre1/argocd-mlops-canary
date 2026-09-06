@@ -2,7 +2,7 @@
 name: CI Pipeline
 
 on:  # yamllint disable-line rule:truthy
-workflow_dispatch:  # Add a "run workflow" button in github
+  workflow_dispatch:  # Add a "run workflow" button in github
   push:
     paths:
       - 'app/**'  # Only build when the Python app changes
