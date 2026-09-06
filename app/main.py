@@ -24,7 +24,7 @@ REQUEST_COUNT = Counter(
 )
 
 # Expose the metrics for Prometheus to scrape
-matrics_app = make_asgi_app()
+metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
 

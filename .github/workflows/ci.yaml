@@ -18,21 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check Docker credentials
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-        run: |
-          if [ -z "$DOCKERHUB_USERNAME" ]; then
-            echo "DOCKERHUB_USERNAME is NOT set"
-            exit 1
-          fi
-          if [ -z "$DOCKERHUB_PASSWORD" ]; then
-            echo "DOCKERHUB_PASSWORD is NOT set"
-            exit 1
-          fi
-          echo "Both Docker Hub secrets are present"
-
       - name: Log in to DockerHub
         uses: docker/login-action@v3
         with:
