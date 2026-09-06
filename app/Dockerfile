@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir --root-user-action=ignore https://github.com/expl
 COPY . .
 
 # Default to v1 (overridden in Kube deploy manifest for canary test)
-ENV APP_VERSION=v1
+ENV APP_VERSION=v2
 
 EXPOSE 8000
 
