@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-# Default port is 8080
-URL="http://localhost:8080/extract-entities"
+# port is 8000
+URL="http://localhost:8000/extract-entities"
 
 # payload
 JSON_PAYLOAD='{"text": "Applied Research Associates"}'

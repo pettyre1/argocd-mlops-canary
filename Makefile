@@ -24,6 +24,7 @@ setup: teardown start-cluster install-tools build apply-bootstrap get-argo-pass
 teardown:
 	#@echo "Destroying Minikube cluster..."
 	#minikube delete || true
+	k3d cluster delete mlops-cluster || true
 
 start-cluster:
 	#@echo "Starting Minikube cluster ($(CPUS) CPUs, $(MEMORY)MB RAM)..."
