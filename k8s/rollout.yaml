@@ -27,7 +27,7 @@ spec:
             - containerPort: 8000
           env:
             - name: APP_VERSION
-              value: "v1"  # Change to v2 to sabotage
+              value: "v1"
   strategy:
     canary:
       steps:
