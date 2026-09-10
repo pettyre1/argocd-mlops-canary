@@ -18,7 +18,7 @@ help:
 	@echo "  make port-forward-app  - Forwards the NLP API to localhost:8000"
 	@echo "  make get-argo-pass     - Retrieves the initial ArgoCD admin password"
 
-setup: teardown start-cluster install-tools build apply-bootstrap get-argo-pass
+setup: teardown start-cluster install-tools apply-bootstrap get-argo-pass
 	@echo "\nCluster setup complete! Run 'make help' for port-forwarding commands."
 
 teardown:
