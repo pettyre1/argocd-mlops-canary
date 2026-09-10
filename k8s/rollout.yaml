@@ -15,7 +15,7 @@ spec:
         app: nlp-api
       annotations:
         # Prometheus auto-scrape /metrics endpoint
-        prometheus.io/scrpe: "true"
+        prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
         prometheus.io/port: "8000"
     spec:
@@ -33,7 +33,12 @@ spec:
       steps:
         # 1: 20% of traffic to new version
         - setWeight: 20
-        # 2: Pause 30s to let traffic hit canary pod
-        - pause: { duration: 30s }
+        # 2: Run Prometheus Analysis 
+        - analysis:
+            templates:
+              - templateName: latency-check
+            args:
+              - name: app-name
+                value: nlp-api
         # Step 3: If analysis passes, route 100% traffic to new version
         - setWeight: 100

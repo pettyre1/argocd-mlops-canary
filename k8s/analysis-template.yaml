@@ -15,7 +15,6 @@ spec:
       count: 3
       provider:
         prometheus:
-          # TODO match this to my Prometheus service name?
           address: http://prometheus-server.default.svc.cluster.local:80
           query: |
             histogram_quantile(

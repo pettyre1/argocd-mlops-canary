@@ -76,4 +76,8 @@ port-forward-prom:
 
 port-forward-app:
 	@echo "NLP API running on http://localhost:8000 (Ctrl+C to stop)..."
-	kubectl port-forward svc/nlp-api-service 8000:80
+	while true; do \
+		kubectl port-forward svc/nlp-api-service 8000:80; \
+		echo "Connection lost. Reconnecting to new pod..."; \
+		sleep 2; \
+	done
