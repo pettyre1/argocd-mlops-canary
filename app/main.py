@@ -13,7 +13,7 @@ app = FastAPI(title="MLOps NLP Service")
 # This Histogram tracks latency to trigger
 # the ArgoCD Rollouts AnalysisTemplate
 REQUEST_LATENCY = Histogram(
-  "http_request_latency_seconds",
+  "http_request_duration_seconds",
   "Latency of HTTP requests in seconds",
   ["endpoint"]
 )
@@ -61,5 +61,4 @@ async def extract_entities(payload: TextPayload):
     "entities": entities
   }
 
-# Test CI versioning
 
