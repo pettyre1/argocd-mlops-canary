@@ -52,7 +52,7 @@ APP_VERSION = os.getenv("APP_VERSION", "v1")
 @app.post("/extract-entities")
 async def extract_entities(payload: TextPayload):
   # Simulate model degradation in the v2 canary deployment
-  #time.sleep(3) # push latency over 2-second GitOps threshold
+  time.sleep(3) # push latency over 2-second GitOps threshold
 
   entities = extract_named_entities(payload.text)
 
