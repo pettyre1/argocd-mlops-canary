@@ -8,12 +8,12 @@ spec:
     - name: app-name
   metrics:
     - name: p95-latency
-      initialDelay: 30s
+      initialDelay: 15s
       # If the 95th percentile latency goes above 2 second, analysis fails
       successCondition: result[0] < 2.0
       # Argo Rollouts evaluates this every 20 seconds, up to 3 measurements
       interval: 10s
-      count: 3
+      count: 6
       provider:
         prometheus:
           address: http://prometheus-server.default.svc.cluster.local:80
@@ -21,5 +21,5 @@ spec:
             histogram_quantile(
               0.95,
               sum(rate(http_request_duration_seconds_bucket{
-                app="{{args.app-name}}"}[5m])) by (le)
+                app="{{args.app-name}}"}[1m])) by (le)
             )
