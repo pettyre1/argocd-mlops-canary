@@ -8,6 +8,7 @@ spec:
     - name: app-name
   metrics:
     - name: p95-latency
+      initialDelay: 30s
       # If the 95th percentile latency goes above 2 second, analysis fails
       successCondition: result[0] < 2.0
       # Argo Rollouts evaluates this every 20 seconds, up to 3 measurements
