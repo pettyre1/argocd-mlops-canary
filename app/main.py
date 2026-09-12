@@ -38,7 +38,7 @@ async def record_metrics(request: Request, call_next):
 
   # Ignore /metrics endpoint itself to prevent skewed data
   if request.url.path != "/metrics":
-    REQUEST_LATENCY.labels(app="nlp-api", endpoint=request.url.path)
+    REQUEST_LATENCY.labels(app="nlp-api", endpoint=request.url.path) \
         .observe(latency)
     REQUEST_COUNT.labels(app="nlp-api", endpoint=request.url.path,
                          http_status=response.status_code).inc()
