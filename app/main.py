@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 from fastapi import FastAPI, Request
@@ -15,12 +16,12 @@ app = FastAPI(title="MLOps NLP Service")
 REQUEST_LATENCY = Histogram(
   "http_request_duration_seconds",
   "Latency of HTTP requests in seconds",
-  ["endpoint"]
+  ["app", "endpoint"]
 )
 REQUEST_COUNT = Counter(
   "http_requests_total",
   "Total HTTP requests",
-  ["endpoint", "http_status"]
+  ["app", "endpoint", "http_status"]
 )
 
 # Expose the metrics for Prometheus to scrape
@@ -37,8 +38,9 @@ async def record_metrics(request: Request, call_next):
 
   # Ignore /metrics endpoint itself to prevent skewed data
   if request.url.path != "/metrics":
-    REQUEST_LATENCY.labels(endpoint=request.url.path).observe(latency)
-    REQUEST_COUNT.labels(endpoint=request.url.path,
+    REQUEST_LATENCY.labels(app="nlp-api", endpoint=request.url.path)
+        .observe(latency)
+    REQUEST_COUNT.labels(app="nlp-api", endpoint=request.url.path,
                          http_status=response.status_code).inc()
   return response
 
@@ -54,7 +56,7 @@ async def extract_entities(payload: TextPayload):
   # Simulate model degradation in the v2 canary deployment
   #time.sleep(3) # push latency over 2-second GitOps threshold
 
-  entities = extract_named_entities(payload.text)
+  entities = await asyncio.to_thread(extract_named_entities, payload.text)
 
   return {
     "version": APP_VERSION,
