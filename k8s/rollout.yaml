@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: nlp-api
-          image: pettyre1/nlp-api:fcb3983eeb56335624c0dbccb6d59dd6ec844a43
+          image: pettyre1/nlp-api:076725413c7de19e69d5ec53c283dee3ea582b23
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
