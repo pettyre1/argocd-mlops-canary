@@ -10,13 +10,15 @@ help:
 	@echo "MLOps GitOps Local Cluster Setup"
 	@echo "--------------------------------"
 	@echo "Commands:"
-	@echo "  make setup             - Tears down (if exists), starts Minikube, installs tools, and deploys"
-	@echo "  make teardown          - Destroys the Minikube cluster"
+	@echo "  make setup             - Tears down (if exists), starts k3d, installs tools"
+	@echo "  make teardown          - Destroys the k3d cluster"
 	@echo "  make build             - Rebuilds the FastAPI Docker image inside Minikube"
 	@echo "  make port-forward-argo - Forwards ArgoCD UI to localhost:8080"
 	@echo "  make port-forward-prom - Forwards Prometheus UI to localhost:9090"
 	@echo "  make port-forward-app  - Forwards the NLP API to localhost:8000"
 	@echo "  make get-argo-pass     - Retrieves the initial ArgoCD admin password"
+	@echo "  make traffic           - In-cluster traffic generator"
+	@echo "  make stop-traffic      - Stop traffic generator"
 
 setup: teardown start-cluster install-tools apply-bootstrap get-argo-pass
 	@echo "\nCluster setup complete! Run 'make help' for port-forwarding commands."
@@ -81,3 +83,11 @@ port-forward-app:
 		echo "Connection lost. Reconnecting to new pod..."; \
 		sleep 2; \
 	done
+
+traffic:
+	@echo "Starting in-cluster traffic generator..."
+	kubectl run traffic-generator --image=curlimages/curl --restart=Never -- /bin/sh -c "while true; do curl -s -o /dev/null -w \"HTTP %{http_code} - %{time_total}s\n\" -X POST http://nlp-api-service/extract-entities -H 'Content-Type: application/json' -d '{\"text\":\"Testing the canary rollout\"}'; sleep 0.5; done"
+
+stop-traffic:
+	@echo "Stopping traffic generator..."
+	kubectl delete pod traffic-generator --ignore-not-found
