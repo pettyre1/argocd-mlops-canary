@@ -1,6 +1,5 @@
 import asyncio
 import os
-import time
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from prometheus_client import make_asgi_app, Histogram, Counter
@@ -53,8 +52,6 @@ APP_VERSION = os.getenv("APP_VERSION", "v1")
 
 @app.post("/extract-entities")
 async def extract_entities(payload: TextPayload):
-  # Simulate model degradation in the v2 canary deployment
-  #time.sleep(3) # push latency over 2-second GitOps threshold
 
   entities = await asyncio.to_thread(extract_named_entities, payload.text)
 
