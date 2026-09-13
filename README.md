@@ -6,6 +6,33 @@ This repository demonstrates a production-grade MLOps deployment pipeline for a 
 
 This project simulates a modern, cloud-native deployment lifecycle. The application is a FastAPI Python web service that utilizes SpaCy to perform named entity extraction. 
 
+### GitOps Deployment Flow
+
+```mermaid
+flowchart LR
+    subgraph CI/CD [CI/CD Pipeline]
+        Dev([Developer]) -->|git push| Git[GitHub Repository]
+        Git -->|Build Image| GHA[GitHub Actions]
+        GHA -->|Push| Registry[(Container Registry)]
+    end
+
+    subgraph K8s [Kubernetes Cluster]
+        Argo[ArgoCD] -->|Watches for Drift| Git
+        Argo -->|Applies Manifests| Rollout[Argo Rollouts]
+        
+        Traffic([Live Traffic]) --> Rollout
+        
+        Rollout -.->|80% Traffic| V1[Stable Pods v1]
+        Rollout -.->|20% Traffic| V2[Canary Pods v2]
+        
+        Prometheus[(Prometheus)] -->|Scrapes /metrics| V1
+        Prometheus -->|Scrapes /metrics| V2
+        
+        Rollout -->|Queries P95 Latency| Prometheus
+        Rollout -.->|Rolls back if > 2s| V2
+    end
+```
+
 The infrastructure relies on the following stack:
 * **Kubernetes (k3d):** The local container orchestration platform.
 * **ArgoCD:** The GitOps controller that continuously monitors this repository and syncs changes to the cluster.
@@ -72,6 +99,33 @@ kubectl argo rollouts get rollout nlp-api --watch
 ## ☁️ Production Expansion: AWS Migration Architecture
 
 While this project utilizes a local k3d cluster for development, the architecture is designed to map directly to enterprise AWS environments adhering to zero-trust and defense-grade security standards.
+
+```mermaid
+flowchart TD
+    Client([External Users / Analysts]) --> WAF{AWS WAF}
+    WAF -->|Blocks Bad Actors/XSS| ALB
+    
+    subgraph VPC [AWS VPC - Multi-AZ]
+        subgraph Public [Public Subnet]
+            ALB[Application Load Balancer]
+        end
+        
+        subgraph Private [Private Subnet]
+            EKS[Amazon EKS Cluster]
+            Node1[Worker Node - AZ A]
+            Node2[Worker Node - AZ B]
+            EKS --- Node1
+            EKS --- Node2
+        end
+        
+        Endpoint[S3 Gateway Endpoint]
+    end
+    
+    ALB -->|Terminates TLS & Routes| EKS
+    Node1 -->|Private Backbone| Endpoint
+    Node2 -->|Private Backbone| Endpoint
+    Endpoint --> S3[(Amazon S3 Bucket)]
+```
 
 To migrate this to production, we would implement the following AWS topology:
 
