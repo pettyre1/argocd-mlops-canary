@@ -1,4 +1,4 @@
-.PHONY: help setup teardown start-cluster install-tools build apply-bootstrap get-argo-pass port-forward-argo port-forward-prom port-forward-app
+.PHONY: help setup teardown start-cluster install-tools build apply-bootstrap get-argo-pass port-forward-argo port-forward-prom port-forward-app traffic stop-traffic
 
 # Variables
 IMAGE_NAME := local/nlp-api:latest
