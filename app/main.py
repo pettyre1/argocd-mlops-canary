@@ -52,8 +52,11 @@ APP_VERSION = os.getenv("APP_VERSION", "v1")
 
 @app.post("/extract-entities")
 async def extract_entities(payload: TextPayload):
-
+  
   entities = await asyncio.to_thread(extract_named_entities, payload.text)
+
+  # induce latency to test argocd
+  #time.sleep(3)
 
   return {
     "version": APP_VERSION,
